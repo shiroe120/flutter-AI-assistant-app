@@ -5,11 +5,13 @@ import 'package:path/path.dart' as p;
 import 'dart:io';
 
 import 'tables/users.dart';
+import 'tables/chat_messages.dart';
+import 'tables/chat_sessions.dart';
 import 'daos/users_dao.dart';
 
 part 'app_database.g.dart';
 
-@DriftDatabase(tables: [Users], daos: [UsersDao])
+@DriftDatabase(tables: [Users,ChatMessages,ChatSessions], daos: [UsersDao])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
