@@ -3,7 +3,7 @@ import 'package:drift/drift.dart';
 class ChatSessions extends Table {
   IntColumn get id => integer().autoIncrement()();
 
-  TextColumn get userId => text()(); // Reference to the user
+  IntColumn get userId => integer()();
 
   TextColumn get sessionName => text().withLength(min: 1, max: 100)();
 

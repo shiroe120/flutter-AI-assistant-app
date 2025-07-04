@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../database/app_database.dart';
 import '../respository/local_user_repository.dart';
-import '../respository/repository.dart';
+import '../respository/user_repository.dart';
 import '../themes/light_theme.dart';
 import 'package:ai_assitant/utils/custom_toast.dart';
 // register page like the login page but with a register button

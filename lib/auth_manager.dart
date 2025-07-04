@@ -1,4 +1,4 @@
-import 'package:ai_assitant/respository/repository.dart';
+import 'package:ai_assitant/respository/user_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthManager {

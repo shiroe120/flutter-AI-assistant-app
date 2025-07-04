@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../database/app_database.dart';
 import '../respository/local_user_repository.dart';
-import '../respository/repository.dart';
+import '../respository/user_repository.dart';
 
 
 class LoginPage extends StatefulWidget{
@@ -173,6 +173,9 @@ class _LoginPageState extends State<LoginPage> {
                     }else{
                       final prefs = await SharedPreferences.getInstance();
                       await prefs.setBool('loggedIn', true);
+                      //查询用户ID
+                      final userId = await userRepository.getUserIdByEmail(email);
+                      await prefs.setInt('currentUserId', userId!);
                       CustomToast.show(context, "Login successful");
                       Navigator.pushNamed(context, '/home');
                     }
