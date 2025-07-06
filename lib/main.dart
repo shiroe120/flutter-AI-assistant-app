@@ -9,6 +9,7 @@ import 'package:ai_assitant/respository/user_repository.dart';
 import 'package:ai_assitant/session_manager.dart';
 import 'package:ai_assitant/themes/dark_theme.dart';
 import 'package:flutter/material.dart';
+import 'msg_manager.dart';
 import 'themes/light_theme.dart';
 import 'package:provider/provider.dart';
 import 'package:ai_assitant/pages/entry_page.dart';
@@ -28,6 +29,9 @@ void main() {
         ChangeNotifierProvider(
           create: (context) => SessionManager(repository: chatRepository),
         ),
+        ChangeNotifierProvider(
+          create: (context) => MessagesManager(repository: chatRepository),
+        )
       ],
       child: MyApp(),
     )

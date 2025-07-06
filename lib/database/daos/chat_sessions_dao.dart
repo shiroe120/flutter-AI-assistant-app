@@ -12,8 +12,9 @@ class ChatSessionsDao extends DatabaseAccessor<AppDatabase> with _$ChatSessionsD
   ChatSessionsDao(AppDatabase db) : super(db);
 
   // 添加一个聊天会话
-  Future<void> insertChatSession(ChatSessionsCompanion session) =>
-      into(chatSessions).insert(session, mode: InsertMode.insertOrReplace);
+  Future<int> insertChatSession(ChatSessionsCompanion session) {
+    return into(chatSessions).insert(session, mode: InsertMode.insertOrReplace);
+  }
 
   //删除一个聊天会话及其消息
   Future<void> deleteChatSession(int sessionId) async {

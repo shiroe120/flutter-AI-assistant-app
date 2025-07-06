@@ -1,3 +1,4 @@
+// lib/widgets/ai_message.dart
 import 'package:flutter/material.dart';
 
 class AiMessage extends StatelessWidget {

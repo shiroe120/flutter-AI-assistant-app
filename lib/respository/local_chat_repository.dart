@@ -19,13 +19,11 @@ class LocalChatRepository implements ChatRepository {
 
   @override
   Future<int> insertChatSession(ChatSessionsCompanion session) async {
-    await db.chatSessionsDao.insertChatSession(session);
-    return session.id.value; // 返回插入的会话ID
+    return db.chatSessionsDao.insertChatSession(session);
   }
   @override
   Future<int> insertMessage(ChatMessagesCompanion message) async {
-    await db.chatMessagesDao.insertMessage(message);
-    return message.id.value; // 返回插入的消息ID
+    return db.chatMessagesDao.insertMessage(message);
   }
 
   @override

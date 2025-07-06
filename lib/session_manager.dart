@@ -21,7 +21,8 @@ class SessionManager extends ChangeNotifier{
   // 获取当前用户ID
   Future<int> _getCurrentUserId() async {
     final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getInt('userId');
+    final userId = prefs.getInt('currentUserId');
+    print("当前获取到的 userId 是: $userId");
     if (userId == null) throw Exception("用户未登录");
     return userId;
   }
@@ -39,6 +40,7 @@ class SessionManager extends ChangeNotifier{
         createdAt: Value(now),
         updatedAt: Value(now),
       ),
+
     );
 
     await loadSessions(); // 重新加载列表

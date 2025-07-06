@@ -176,6 +176,7 @@ class _LoginPageState extends State<LoginPage> {
                       //查询用户ID
                       final userId = await userRepository.getUserIdByEmail(email);
                       await prefs.setInt('currentUserId', userId!);
+                      print("当前存入到的 userId 是: $userId");
                       CustomToast.show(context, "Login successful");
                       Navigator.pushNamed(context, '/home');
                     }
