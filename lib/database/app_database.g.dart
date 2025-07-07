@@ -304,10 +304,6 @@ class $ChatMessagesTable extends ChatMessages
     'message',
     aliasedName,
     false,
-    additionalChecks: GeneratedColumn.checkTextLength(
-      minTextLength: 1,
-      maxTextLength: 500,
-    ),
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );

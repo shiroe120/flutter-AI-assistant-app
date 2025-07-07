@@ -26,6 +26,7 @@ class LocalChatRepository implements ChatRepository {
     return db.chatMessagesDao.insertMessage(message);
   }
 
+
   @override
   Future<void> deleteChatSession(int sessionId) async {
     await db.chatSessionsDao.deleteChatSession(sessionId);

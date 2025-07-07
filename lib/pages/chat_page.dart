@@ -1,10 +1,15 @@
+import 'package:ai_assitant/widgets/chat_input_bar.dart';
 import 'package:ai_assitant/widgets/chat_message_list.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 
 import '../msg_manager.dart';
 import '../session_manager.dart';
+import '../utils/ai_service.dart';
+import '../utils/msg_sender.dart';
 
+// 显示聊天消息和发送聊天消息
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
 
@@ -14,12 +19,17 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   bool _isInitializing = true;
+  final TextEditingController _textController = TextEditingController();
+
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _initializeSession();
+
   }
+  // 初始化AI服务并获取回复
 
   // 初始化会话
   Future<void> _initializeSession() async {
@@ -32,7 +42,6 @@ class _ChatPageState extends State<ChatPage> {
 
       // 插入默认消息
       await messagesManager.setSessionId(newSessionId);
-      await messagesManager.insertDefaultMessage();
 
     } catch (e) {
       // 处理错误，例如显示错误提示
@@ -44,28 +53,35 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
 
     return Consumer<MessagesManager>(
       builder: (context, messagesManager, child) {
-        // 插入一条默认消息
-        if (messagesManager.messages.isEmpty) {
-          return Center(
-            child: Text(
-              '没有消息，请开始对话',
-              style: TextStyle(
-                color: Theme
-                    .of(context)
-                    .colorScheme
-                    .onSurface,
-                fontSize: 18,
+        return Column(
+          children: [
+            Expanded(
+              child: ChatMessageList(
               ),
             ),
-          );
-        }
-        return ChatMessageList(
-          key: ValueKey('messages-${messagesManager.sessionId}'),
+            ChatInputBar(
+              controller: _textController,
+              send: () async {
+                final userMessage = _textController.text.trim();
+                if (userMessage.isEmpty) return;
+                // 清空输入框
+                _textController.clear();
+                MessageSender _messageSender = MessageSender(
+                  msgManager: messagesManager,
+                );
+                // 发送消息
+                await _messageSender.send(userMessage);
+                // 滚动到最新消息
+
+              },
+            ),
+          ],
         );
       }
       );

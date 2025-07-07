@@ -44,6 +44,24 @@ class MessagesManager extends ChangeNotifier {
 
   }
 
+  // 插入一条消息并加载消息列表
+  Future<void> insertMessage(String message, String role) async {
+    if (_sessionId == null) return;
+
+    final now = DateTime.now();
+    await repository.insertMessage(
+      ChatMessagesCompanion(
+        sessionId: Value(_sessionId!),
+        message: Value(message),
+        role: Value(role),
+        timestamp: Value(now),
+      ),
+    );
+
+    // 重新加载消息列表
+    await loadMessages();
+  }
+
   // 设置会话ID并加载消息
   Future<void> setSessionId(int newSessionId) async {
     // 如果会话ID未变化，不重复加载

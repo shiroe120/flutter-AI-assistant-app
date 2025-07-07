@@ -13,13 +13,16 @@ import 'msg_manager.dart';
 import 'themes/light_theme.dart';
 import 'package:provider/provider.dart';
 import 'package:ai_assitant/pages/entry_page.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+Future<void> main() async {
   final db = AppDatabase();
   // Ensure the database is initialized before running the app
   WidgetsFlutterBinding.ensureInitialized();
   final userRepository = LocalUserRepository(db);
   final chatRepository = LocalChatRepository(db);
+
+  await dotenv.load(fileName: ".env");
 
   runApp(
     MultiProvider(

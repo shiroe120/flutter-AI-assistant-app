@@ -4,6 +4,7 @@ import 'package:ai_assitant/themes/ui_constants.dart';
 import 'package:ai_assitant/msg_manager.dart';
 import 'package:provider/provider.dart';
 
+import '../widgets/chat_input_bar.dart';
 import '../widgets/chat_message_list.dart';
 import 'chat_page.dart';
 //home page
@@ -15,6 +16,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final TextEditingController _controller = TextEditingController();
+
 
   @override
   void initState() {
@@ -40,6 +43,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         actions: [
+          //icon button to create new session
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () async {
