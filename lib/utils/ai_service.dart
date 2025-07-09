@@ -12,7 +12,7 @@ class AIService {
     this.modelId = 'doubao-1-5-lite-32k-250115', // 默认模型
   });
 
-  /// 发送消息，获取模型回复
+  /// 获取完整信息
   Future<String> sendMessage(String userMessage) async {
     final headers = {
       'Content-Type': 'application/json',
@@ -52,6 +52,59 @@ class AIService {
     } catch (e) {
       print('请求异常: $e');
       return '请求异常: $e';
+    }
+  }
+
+  /// 流式获取回复
+  Stream<String> sendMessageStream(String userMessage) async* {
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $apiKey',
+    };
+
+    final body = jsonEncode({
+      'model': modelId,
+      'stream': true, // 关键
+      'messages': [
+        {'role': 'user', 'content': userMessage}
+      ],
+    });
+
+    final request = http.Request('POST', Uri.parse(_apiUrl))
+      ..headers.addAll(headers)
+      ..body = body;
+
+    try {
+      final response = await request.send();
+
+      if (response.statusCode == 200) {
+        final utf8Stream = response.stream.transform(utf8.decoder);
+        await for (final chunk in utf8Stream) {
+          for (final line in LineSplitter.split(chunk)) {
+            if (line.trim().isEmpty) continue;
+
+            if (line.startsWith('data: ')) {
+              final jsonPart = line.substring(6).trim();
+
+              if (jsonPart == '[DONE]') break;
+
+              try {
+                final decoded = jsonDecode(jsonPart);
+                final delta = decoded['choices'][0]['delta'];
+                if (delta != null && delta['content'] != null) {
+                  yield delta['content'];
+                }
+              } catch (e) {
+                print('解析失败: $e');
+              }
+            }
+          }
+        }
+      } else {
+        yield '【流式请求失败】${response.statusCode}: ${await response.stream.bytesToString()}';
+      }
+    } catch (e) {
+      yield '【连接异常】$e';
     }
   }
 }

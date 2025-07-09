@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
-import '../msg_manager.dart';
-import '../session_manager.dart';
+import '../viewModel/msg_manager.dart';
+import '../viewModel/session_manager.dart';
 import '../utils/ai_service.dart';
 import '../utils/msg_sender.dart';
 
@@ -40,8 +40,10 @@ class _ChatPageState extends State<ChatPage> {
       // 创建新会话
       final newSessionId = await sessionManager.createNewSession();
 
-      // 插入默认消息
+      // 设置会话ID
       await messagesManager.setSessionId(newSessionId);
+
+
 
     } catch (e) {
       // 处理错误，例如显示错误提示
@@ -53,7 +55,6 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
 
@@ -62,8 +63,18 @@ class _ChatPageState extends State<ChatPage> {
         return Column(
           children: [
             Expanded(
-              child: ChatMessageList(
-              ),
+              child: messagesManager.messages.isEmpty
+                  ? Center(
+                child: Text(
+                  "问任何事。",
+                  style: TextStyle(
+                    fontSize: 36,
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              )
+                  : ChatMessageList(),
             ),
             ChatInputBar(
               controller: _textController,

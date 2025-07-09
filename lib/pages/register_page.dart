@@ -1,4 +1,4 @@
-import 'package:ai_assitant/auth_manager.dart';
+import 'package:ai_assitant/viewModel/auth_manager.dart';
 import 'package:ai_assitant/themes/ui_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
@@ -191,25 +191,36 @@ class RegisterPage extends StatelessWidget {
                   SizedBox(height: 16),
 
                   //button for back to login
-                  OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      minimumSize: Size.fromHeight(UIConstants.buttonHeight),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      foregroundColor: Theme.of(context).colorScheme.primary,
-                      backgroundColor: Theme.of(context).colorScheme.onPrimary,
-                      side: BorderSide(
-                        color: Theme.of(context).colorScheme.onPrimary,
-                      ),
+                  Container(
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Theme.of(context).colorScheme.primary.withOpacity(0.02),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text(
-                      "Back to Login",
-                      style: TextStyle(
-                          fontSize: 16),),
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: Size.fromHeight(UIConstants.buttonHeight),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        foregroundColor: Theme.of(context).colorScheme.primary,
+                        backgroundColor: Theme.of(context).colorScheme.onPrimary,
+                        side: BorderSide(
+                          color: Theme.of(context).colorScheme.onPrimary,
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        "Back to Login",
+                        style: TextStyle(
+                            fontSize: 16),),
+                    ),
                   ),
                   SizedBox(height: 60),
 

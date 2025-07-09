@@ -1,7 +1,7 @@
 import 'package:ai_assitant/respository/chat_repository.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
-import 'database/app_database.dart';
+import '../database/app_database.dart';
 
 class MessagesManager extends ChangeNotifier {
   final ChatRepository repository;
@@ -45,11 +45,11 @@ class MessagesManager extends ChangeNotifier {
   }
 
   // 插入一条消息并加载消息列表
-  Future<void> insertMessage(String message, String role) async {
-    if (_sessionId == null) return;
+  Future<int> insertMessage(String message, String role) async {
+    if (_sessionId == null) return -1;
 
     final now = DateTime.now();
-    await repository.insertMessage(
+    final id = await repository.insertMessage(
       ChatMessagesCompanion(
         sessionId: Value(_sessionId!),
         message: Value(message),
@@ -60,8 +60,20 @@ class MessagesManager extends ChangeNotifier {
 
     // 重新加载消息列表
     await loadMessages();
+    return id;
   }
 
+  // 更新指定消息的内容
+  Future<void> updateMessageContent(int messageId, String newContent) async {
+    await repository.updateMessageContent(messageId, newContent);
+
+    // 更新本地缓存中的对应消息
+    final index = _messages.indexWhere((m) => m.id == messageId);
+    if (index != -1) {
+      _messages[index] = _messages[index].copyWith(message: newContent);
+      notifyListeners();
+    }
+  }
   // 设置会话ID并加载消息
   Future<void> setSessionId(int newSessionId) async {
     // 如果会话ID未变化，不重复加载

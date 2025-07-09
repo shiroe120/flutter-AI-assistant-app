@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class SessionManager extends ChangeNotifier{
   final ChatRepository repository;
-
+  // 会话列表
   List<ChatSession> _sessions = [];
   List<ChatSession> get sessions => _sessions;
 
@@ -17,6 +17,8 @@ class SessionManager extends ChangeNotifier{
   bool get isLoading => _isLoading;
 
   SessionManager({required this.repository});
+
+
 
   // 获取当前用户ID
   Future<int> _getCurrentUserId() async {

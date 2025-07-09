@@ -20,6 +20,13 @@ class ChatMessagesDao extends DatabaseAccessor<AppDatabase> with _$ChatMessagesD
       ..orderBy([(msg) => OrderingTerm.asc(msg.timestamp)]))
         .get();
   }
+
+  // 更新指定 id 的消息内容
+  Future<void> updateMessageContent(int messageId, String newContent) async {
+    await (update(chatMessages)..where((msg) => msg.id.equals(messageId)))
+        .write(ChatMessagesCompanion(message: Value(newContent)));
+  }
+
 }
 
 

@@ -36,4 +36,23 @@ class ChatSessionsDao extends DatabaseAccessor<AppDatabase> with _$ChatSessionsD
   Future<bool> updateChatSession(Insertable<ChatSession> session) =>
       update(chatSessions).replace(session);
 
+  // 根据会话 ID 获取聊天会话
+  Future<ChatSession> getSessionById(int sessionId) {
+    return (select(chatSessions)
+      ..where((tbl) => tbl.id.equals(sessionId)))
+        .getSingle();
+  }
+
+  // 更新聊天会话名称
+  Future<bool> updateSessionName(int sessionId, String newName) async {
+    final old = await getSessionById(sessionId);
+    final updated = ChatSession(
+      id: old.id,
+      userId: old.userId,
+      sessionName: newName,
+      createdAt: old.createdAt,
+      updatedAt: DateTime.now(),
+    );
+    return update(chatSessions).replace(updated);
+  }
 }

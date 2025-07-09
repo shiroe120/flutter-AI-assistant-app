@@ -2,7 +2,7 @@ import 'package:ai_assitant/themes/light_theme.dart';
 import 'package:ai_assitant/utils/custom_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_assitant/themes/ui_constants.dart';
-import 'package:ai_assitant/auth_manager.dart';
+import 'package:ai_assitant/viewModel/auth_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -51,6 +51,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
         ),
         titleSpacing: 36,
+        automaticallyImplyLeading: false, // Disable the back button
 
       ),
       body: Center(
@@ -91,9 +92,8 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    errorText: emailController.text.isNotEmpty &&
-                            !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                                .hasMatch(emailController.text)
+                    errorText: (emailController.text.isNotEmpty &&
+                        !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(emailController.text))
                         ? "请输入有效的邮箱地址"
                         : null,
                   ),
@@ -187,26 +187,38 @@ class _LoginPageState extends State<LoginPage> {
                         fontSize: 16),),
                 ),
                 SizedBox(height: 8),
+
                 // Register button to navigate to the register page
-                OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    minimumSize: Size.fromHeight(UIConstants.buttonHeight),
-                    side: BorderSide(
-                      color: Theme.of(context).colorScheme.onPrimary
-                    ),
-                    backgroundColor: Theme.of(context).colorScheme.onPrimary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+                Container(
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.02),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
-                  onPressed: (){
-                    Navigator.pushNamed(context, '/register');
-                  },
-                  child: Text("Register",
-                    style: TextStyle(
-                        fontSize: 16,
-                        color: Theme.of(context).colorScheme.primary
-                      ),),
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: Size.fromHeight(UIConstants.buttonHeight),
+                      side: BorderSide(
+                        color: Theme.of(context).colorScheme.onPrimary
+                      ),
+                      backgroundColor: Theme.of(context).colorScheme.onPrimary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: (){
+                      Navigator.pushNamed(context, '/register');
+                    },
+                    child: Text("Register",
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Theme.of(context).colorScheme.primary
+                        ),),
+                  ),
                 ),
                 SizedBox(height: 80),
               ],

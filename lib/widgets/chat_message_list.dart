@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../msg_manager.dart';
+import '../viewModel/msg_manager.dart';
 import '../widgets/user_bubble.dart';
 import '../widgets/ai_message.dart';
 
@@ -47,8 +47,6 @@ class _ChatMessageListState extends State<ChatMessageList> {
     final handler = context.watch<MessagesManager>();
     final messages = handler.messages;
 
-    // 当消息变化后滚动到底部
-    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
 
     return ListView.builder(
       controller: _scrollController,

@@ -1,9 +1,10 @@
-import 'package:ai_assitant/msg_manager.dart';
+import 'package:ai_assitant/viewModel/msg_manager.dart';
 import 'package:ai_assitant/utils/ai_service.dart';
 
 class MessageSender {
   final MessagesManager msgManager;
   final AIService aiService = AIService();
+
   MessageSender({
     required this.msgManager,
   });
@@ -16,11 +17,15 @@ class MessageSender {
     await msgManager.insertMessage(userMessage, 'user');
 
     try {
-      // 获取 AI 回复
-      final aiReply = await aiService.sendMessage(userMessage);
+      // 插入一条空的 AI 消息，并获得 ID
+      final messageId = await msgManager.insertMessage('','ai');
+      if (messageId == -1) return;
 
-      // 插入 AI 回复
-      await msgManager.insertMessage(aiReply, 'ai');
+      String reply = '';
+      await for (final chunk in aiService.sendMessageStream(userMessage)) {
+        reply += chunk;
+        await msgManager.updateMessageContent(messageId, reply);
+      }
     } catch (e) {
       // 插入错误消息
       await msgManager.insertMessage('AI 回复失败: $e', 'ai');
