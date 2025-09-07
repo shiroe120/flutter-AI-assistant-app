@@ -9,7 +9,7 @@ class AIService {
   static const String _apiUrl = 'https://ark.cn-beijing.volces.com/api/v3/chat/completions';
 
   AIService({
-    this.modelId = 'doubao-1-5-lite-32k-250115', // 默认模型
+    this.modelId = 'doubao-1-5-lite-32k-250115',
   });
 
   /// 获取完整信息

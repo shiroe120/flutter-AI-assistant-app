@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../utils/speech_to_text_helper.dart';
 import '../viewModel/msg_manager.dart';
 import '../themes/light_theme.dart';
 import '../utils/ai_service.dart';
@@ -23,6 +24,8 @@ class ChatInputBar extends StatefulWidget {
 
 class _ChatInputBarState extends State<ChatInputBar> {
   bool hasText = false;
+  bool isVoiceMode = false;
+  final speechHelper = SpeechToTextHelper(); // 工具类实例
 
   @override
   void initState() {
@@ -68,7 +71,31 @@ class _ChatInputBarState extends State<ChatInputBar> {
       child: Row(
         children: [
           Expanded(
-            child: TextField(
+            child: isVoiceMode
+                ? GestureDetector(
+              onLongPressStart: (_) async {
+                await speechHelper.startListening();
+              },
+              onLongPressEnd: (_) async {
+                final result = await speechHelper.stopListeningAndTranscribe();
+                widget.controller.text += result;
+                setState(() {
+                  hasText = widget.controller.text.trim().isNotEmpty;
+                  isVoiceMode = false; // 录完回到键盘模式
+                });
+              },
+              child: Container(
+                height: 48,
+                alignment: Alignment.center,
+                margin: const EdgeInsets.symmetric(horizontal: 8),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: const Text("按住说话", style: TextStyle(color: Colors.black54)),
+              ),
+            )
+                : TextField(
               controller: widget.controller,
               minLines: 1,
               maxLines: 5,
@@ -83,14 +110,20 @@ class _ChatInputBarState extends State<ChatInputBar> {
             ),
           ),
 
+
+          // voice button
           IconButton(
             onPressed: () {
-              // 麦克风逻辑
+              setState(() {
+                isVoiceMode = !isVoiceMode;
+              });
             },
-            icon: const Icon(Icons.keyboard_voice),
-            focusColor: Theme.of(context).colorScheme.onPrimary,
-            color: Theme.of(context).colorScheme.primary,
+            icon: Icon(
+              isVoiceMode ? Icons.keyboard : Icons.keyboard_voice,
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
+
 
           IconButton(
             icon: const Icon(Icons.send),

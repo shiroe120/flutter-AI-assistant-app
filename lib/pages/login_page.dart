@@ -77,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: Theme.of(context).colorScheme.onPrimary,
-                    labelText: "Email",
+                    labelText: "电子邮箱",
                     labelStyle: TextStyle(color: underSurface),
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(

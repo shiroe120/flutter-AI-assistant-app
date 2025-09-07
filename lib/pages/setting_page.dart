@@ -1,9 +1,67 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../themes/light_theme.dart';
 
 class SettingPage extends StatelessWidget {
   const SettingPage({super.key});
+
+  Future<void> _showPromptInputDialog(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final existingPrompt = prefs.getString('globalPrompt') ?? '';
+
+    final TextEditingController controller = TextEditingController(text: existingPrompt);
+
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('设置提示词'),
+            content: TextField(
+              controller: controller,
+              maxLines: 5,
+              decoration: InputDecoration(
+                hintText: '输入提示词...',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('取消'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  final prompt = controller.text.trim();
+                  if (prompt.isNotEmpty) {
+                    await prefs.setString('globalPrompt', prompt);
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('提示词已设置')),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('提示词不能为空')),
+                    );
+                  }
+                },
+                child: const Text('保存'),
+              ),
+            ],
+          );
+        }
+        );
+  }
+
+
+
+
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -37,22 +95,16 @@ class SettingPage extends StatelessWidget {
           children: [
             // 设置
             ListTile(
-              leading: Icon(Icons.settings, color: Theme.of(context).colorScheme.primary),
-              title: const Text('设置'),
-              onTap: () {},
-              trailing: Icon(Icons.arrow_forward_ios, color: underSurface, size: 16),
+              leading: Icon(Icons.edit, color: Theme.of(context).colorScheme.primary),
+              title: const Text('设置提示词'),
+              subtitle: const Text("点击后输入提示词，可在对话中自动使用"),
+              onTap: () => _showPromptInputDialog(context),
             ),
             Divider(
               color: Theme.of(context).colorScheme.surface,
               height: 1,
               indent: 16,
               endIndent: 16,
-            ),
-            // 退出登录
-            ListTile(
-              leading: Icon(Icons.logout, color: Theme.of(context).colorScheme.primary),
-              title: const Text('退出登录'),
-              onTap: () {},
             ),
           ],
         ),
