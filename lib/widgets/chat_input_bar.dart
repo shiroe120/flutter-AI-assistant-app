@@ -25,6 +25,9 @@ class ChatInputBar extends StatefulWidget {
 class _ChatInputBarState extends State<ChatInputBar> {
   bool hasText = false;
   bool isVoiceMode = false;
+  bool isRecording = false;
+  DateTime? startTime;
+
   final speechHelper = SpeechToTextHelper(); // 工具类实例
 
   @override
@@ -74,9 +77,19 @@ class _ChatInputBarState extends State<ChatInputBar> {
             child: isVoiceMode
                 ? GestureDetector(
               onLongPressStart: (_) async {
+                startTime = DateTime.now();
+                print("长按成功");
+                setState(() {
+                  isRecording = true; // 开始录音动画
+                });
                 await speechHelper.startListening();
               },
               onLongPressEnd: (_) async {
+                setState(() {
+                  isRecording = false; // 停止录音动画
+                });
+                final duration = DateTime.now().difference(startTime!);
+                print("录音时长: ${duration.inMilliseconds} ms");
                 final result = await speechHelper.stopListeningAndTranscribe();
                 widget.controller.text += result;
                 setState(() {
@@ -84,15 +97,30 @@ class _ChatInputBarState extends State<ChatInputBar> {
                   isVoiceMode = false; // 录完回到键盘模式
                 });
               },
-              child: Container(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 500),
                 height: 48,
                 alignment: Alignment.center,
                 margin: const EdgeInsets.symmetric(horizontal: 8),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                  color: isRecording
+                      ? Theme.of(context).colorScheme.primary.withOpacity(0.3) // 动画变色
+                      : Theme.of(context).colorScheme.primary.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(6),
+                  boxShadow: isRecording
+                      ? [
+                    BoxShadow(
+                      color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+                      blurRadius: 12,
+                      spreadRadius: 3,
+                    )
+                  ]
+                      : [],
                 ),
-                child: const Text("按住说话", style: TextStyle(color: Colors.black54)),
+                child: Text(
+                  isRecording ? "正在录音..." : "按住说话",
+                  style: const TextStyle(color: Colors.black54),
+                ),
               ),
             )
                 : TextField(
@@ -109,6 +137,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
               ),
             ),
           ),
+
 
 
           // voice button

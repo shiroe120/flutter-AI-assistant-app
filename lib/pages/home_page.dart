@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import '../widgets/chat_input_bar.dart';
 import '../widgets/chat_message_list.dart';
 import 'chat_page.dart';
+import 'debug.dart';
 //home page
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
