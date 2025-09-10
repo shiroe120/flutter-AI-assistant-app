@@ -29,7 +29,6 @@ class _ChatPageState extends State<ChatPage> {
     _initializeSession();
 
   }
-  // 初始化AI服务并获取回复
 
   // 初始化会话
   Future<void> _initializeSession() async {
@@ -74,8 +73,12 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                 ),
               )
+
+              // 消息列表
                   : ChatMessageList(),
             ),
+
+            //消息发送框
             ChatInputBar(
               controller: _textController,
               send: () async {
@@ -83,11 +86,14 @@ class _ChatPageState extends State<ChatPage> {
                 if (userMessage.isEmpty) return;
                 // 清空输入框
                 _textController.clear();
+
+                //获取历史消息列表
+                final history = messagesManager.messages;
                 MessageSender _messageSender = MessageSender(
                   msgManager: messagesManager,
                 );
                 // 发送消息
-                await _messageSender.send(userMessage);
+                await _messageSender.sendWithMemory(history, userMessage);
                 // 滚动到最新消息
 
               },

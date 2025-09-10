@@ -6,6 +6,7 @@ import '../database/app_database.dart';
 class MessagesManager extends ChangeNotifier {
   final ChatRepository repository;
 
+  //当前显示消息的会话
   int? _sessionId;
   int? get sessionId => _sessionId;
 
@@ -18,7 +19,7 @@ class MessagesManager extends ChangeNotifier {
   MessagesManager({
     required this.repository
   });
-  // 插入2条默认消息
+  // 插入2条默认消息，调试用
   Future<void> insertDefaultMessage() async {
     if (_sessionId == null) return;
 
@@ -63,7 +64,7 @@ class MessagesManager extends ChangeNotifier {
     return id;
   }
 
-  // 更新指定消息的内容
+  // 更新指定消息的内容，流式显示用
   Future<void> updateMessageContent(int messageId, String newContent) async {
     await repository.updateMessageContent(messageId, newContent);
 
@@ -102,5 +103,4 @@ class MessagesManager extends ChangeNotifier {
     _isLoading = false;
     notifyListeners();
   }
-
 }
