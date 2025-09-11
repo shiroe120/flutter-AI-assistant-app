@@ -65,6 +65,8 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Theme.of(context).colorScheme.onPrimary,
         automaticallyImplyLeading: false,
       ),
+
+      //侧边栏
       drawer: Drawer(
         child: Consumer<SessionManager>(
           builder: (context, sessionManager, _) {
@@ -123,37 +125,49 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ],
                   ),
-                  child: Column(
-                    children: sessionManager.sessions
-                        .expand<Widget>((session) => [
-                      ListTile(
-                        title: Text(session.sessionName),
-                        subtitle: Text(session.createdAt.toString()),
-                        onTap: () async {
-                          final messagesManager = Provider.of<MessagesManager>(context, listen: false);
-                          await messagesManager.setSessionId(session.id);
-                          Navigator.pop(context);
-                        },
-                        trailing: IconButton(
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                          icon: const Icon(Icons.delete),
-                          onPressed: () async {
-                            await sessionManager.deleteSession(session.id);
-                            await _loadSessions();
-                          },
+                  child: Column(children: sessionManager.sessions.isEmpty
+                      ? [
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text(
+                        "暂无会话",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
+                        textAlign: TextAlign.center,
                       ),
-                      // Divider 后续你也可以封装成一个组件
-                      Divider(
-                        color: Theme.of(context).colorScheme.surface,
-                        height: 1,
-                        indent: 16,
-                        endIndent: 16,
+                    ),
+                  ]
+                      : sessionManager.sessions
+                      .expand<Widget>((session) => [
+                    ListTile(
+                      title: Text(session.sessionName),
+                      subtitle: Text(session.createdAt.toString()),
+                      onTap: () async {
+                        final messagesManager = Provider.of<MessagesManager>(context, listen: false);
+                        await messagesManager.setSessionId(session.id);
+                        Navigator.pop(context);
+                      },
+                      trailing: IconButton(
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                        icon: const Icon(Icons.delete),
+                        onPressed: () async {
+                          await sessionManager.deleteSession(session.id);
+                          await _loadSessions();
+                        },
                       ),
-                    ])
-                        .toList()
-                      ..removeLast(), // 移除最后一个多余的 Divider
+                    ),
+                    Divider(
+                      color: Theme.of(context).colorScheme.surface,
+                      height: 1,
+                      indent: 16,
+                      endIndent: 16,
+                    ),
+                  ])
+                      .toList()
+                    ..removeLast(),
                   ),
                 ),
               ],
