@@ -60,14 +60,14 @@ class _ChatInputBarState extends State<ChatInputBar> {
   @override
   Widget build(BuildContext context) {
     return AnimatedSize(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 150),
       curve: Curves.easeInOut,
       alignment: Alignment.topCenter, // 从上往下展开/收起
       child:Container(
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-        margin: const EdgeInsets.only(left: 8, right: 8, bottom: 20, top: 8),
+        margin: const EdgeInsets.only(left: 4, right: 4, bottom: 20, top: 8),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(_showAddCards ? 16 : 8),
+          borderRadius: BorderRadius.circular(8),
           border: Border.all(
             color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
             width: 1,
@@ -243,13 +243,13 @@ class _ChatInputBarState extends State<ChatInputBar> {
               ],
             ),
         AnimatedSwitcher(
-          duration: const Duration(milliseconds: 100),
+          duration: const Duration(milliseconds: 80),
           transitionBuilder: (Widget child, Animation<double> animation) {
             return FadeTransition(
         opacity: animation,
         child: SlideTransition(
           position: Tween<Offset>(
-            begin: const Offset(0, 0.1),
+            begin: const Offset(0, 0.3),
             end: Offset.zero,
           ).animate(animation),
           child: child,
@@ -261,8 +261,11 @@ class _ChatInputBarState extends State<ChatInputBar> {
             key: const ValueKey('addCards'),
             padding: const EdgeInsets.only(top: 8.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
+                SizedBox(
+                  width: 16,
+                ),
                 //图库按钮
                 GestureDetector(
                   onTap: () async {
@@ -277,20 +280,35 @@ class _ChatInputBarState extends State<ChatInputBar> {
                       }
                     }
                   },
-                  child: Card(
-                    elevation: 2,
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.photo, size: 32, color: Theme.of(context).colorScheme.primary),
-                          const SizedBox(height: 8),
-                          const Text('图库'),
-                        ],
+                  child: SizedBox(
+                    width: 100,
+                    child: Card(
+                      elevation: 1,
+                      color: Theme.of(context).colorScheme.surface,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        side: BorderSide(
+                          color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+                          width: 1,
+                        ),
                       ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.photo, size: 32, color: Theme.of(context).colorScheme.primary),
+                            const SizedBox(height: 8),
+                            const Text('图库'),
+                          ],
+                        ),
+                      ),
+
                     ),
-                  ),
+                  )
+                ),
+                SizedBox(
+                  width: 16,
                 ),
                 //拍照按钮
                 GestureDetector(
@@ -306,18 +324,30 @@ class _ChatInputBarState extends State<ChatInputBar> {
                       }
                     }
                   },
-                  child: Card(
-                    elevation: 2,
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.camera_alt, size: 32, color: Theme.of(context).colorScheme.primary),
-                          const SizedBox(height: 8),
-                          const Text('拍照'),
-                        ],
+                  child: SizedBox(
+                    width: 100,
+                    child: Card(
+                      elevation: 1,
+                      color: Theme.of(context).colorScheme.surface,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        side: BorderSide(
+                          color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+                          width: 1,
+                        ),
                       ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.camera_enhance_rounded, size: 32, color: Theme.of(context).colorScheme.primary),
+                            const SizedBox(height: 8),
+                            const Text('拍照'),
+                          ],
+                        ),
+                      ),
+
                     ),
                   ),
                 ),
