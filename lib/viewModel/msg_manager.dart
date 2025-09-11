@@ -45,24 +45,24 @@ class MessagesManager extends ChangeNotifier {
 
   }
 
-  // 插入一条消息并加载消息列表
-  Future<int> insertMessage(String message, String role) async {
-    if (_sessionId == null) return -1;
+  Future<int> insertMessage(String message, String role, {String? imagePath}) async {
+  if (_sessionId == null) return -1;
 
-    final now = DateTime.now();
-    final id = await repository.insertMessage(
-      ChatMessagesCompanion(
-        sessionId: Value(_sessionId!),
-        message: Value(message),
-        role: Value(role),
-        timestamp: Value(now),
-      ),
-    );
+  final now = DateTime.now();
+  final id = await repository.insertMessage(
+    ChatMessagesCompanion(
+      sessionId: Value(_sessionId!),
+      message: Value(message),
+      role: Value(role),
+      timestamp: Value(now),
+      imagePath: imagePath != null ? Value(imagePath) : const Value.absent(),
+    ),
+  );
 
-    // 重新加载消息列表
-    await loadMessages();
-    return id;
-  }
+  // 重新加载消息列表
+  await loadMessages();
+  return id;
+}
 
   // 更新指定消息的内容，流式显示用
   Future<void> updateMessageContent(int messageId, String newContent) async {

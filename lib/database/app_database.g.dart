@@ -318,6 +318,17 @@ class $ChatMessagesTable extends ChatMessages
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _imagePathMeta = const VerificationMeta(
+    'imagePath',
+  );
+  @override
+  late final GeneratedColumn<String> imagePath = GeneratedColumn<String>(
+    'image_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -325,6 +336,7 @@ class $ChatMessagesTable extends ChatMessages
     role,
     message,
     timestamp,
+    imagePath,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -373,6 +385,12 @@ class $ChatMessagesTable extends ChatMessages
     } else if (isInserting) {
       context.missing(_timestampMeta);
     }
+    if (data.containsKey('image_path')) {
+      context.handle(
+        _imagePathMeta,
+        imagePath.isAcceptableOrUnknown(data['image_path']!, _imagePathMeta),
+      );
+    }
     return context;
   }
 
@@ -407,6 +425,10 @@ class $ChatMessagesTable extends ChatMessages
             DriftSqlType.dateTime,
             data['${effectivePrefix}timestamp'],
           )!,
+      imagePath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}image_path'],
+      ),
     );
   }
 
@@ -422,12 +444,14 @@ class ChatMessage extends DataClass implements Insertable<ChatMessage> {
   final String role;
   final String message;
   final DateTime timestamp;
+  final String? imagePath;
   const ChatMessage({
     required this.id,
     required this.sessionId,
     required this.role,
     required this.message,
     required this.timestamp,
+    this.imagePath,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -437,6 +461,9 @@ class ChatMessage extends DataClass implements Insertable<ChatMessage> {
     map['role'] = Variable<String>(role);
     map['message'] = Variable<String>(message);
     map['timestamp'] = Variable<DateTime>(timestamp);
+    if (!nullToAbsent || imagePath != null) {
+      map['image_path'] = Variable<String>(imagePath);
+    }
     return map;
   }
 
@@ -447,6 +474,10 @@ class ChatMessage extends DataClass implements Insertable<ChatMessage> {
       role: Value(role),
       message: Value(message),
       timestamp: Value(timestamp),
+      imagePath:
+          imagePath == null && nullToAbsent
+              ? const Value.absent()
+              : Value(imagePath),
     );
   }
 
@@ -461,6 +492,7 @@ class ChatMessage extends DataClass implements Insertable<ChatMessage> {
       role: serializer.fromJson<String>(json['role']),
       message: serializer.fromJson<String>(json['message']),
       timestamp: serializer.fromJson<DateTime>(json['timestamp']),
+      imagePath: serializer.fromJson<String?>(json['imagePath']),
     );
   }
   @override
@@ -472,6 +504,7 @@ class ChatMessage extends DataClass implements Insertable<ChatMessage> {
       'role': serializer.toJson<String>(role),
       'message': serializer.toJson<String>(message),
       'timestamp': serializer.toJson<DateTime>(timestamp),
+      'imagePath': serializer.toJson<String?>(imagePath),
     };
   }
 
@@ -481,12 +514,14 @@ class ChatMessage extends DataClass implements Insertable<ChatMessage> {
     String? role,
     String? message,
     DateTime? timestamp,
+    Value<String?> imagePath = const Value.absent(),
   }) => ChatMessage(
     id: id ?? this.id,
     sessionId: sessionId ?? this.sessionId,
     role: role ?? this.role,
     message: message ?? this.message,
     timestamp: timestamp ?? this.timestamp,
+    imagePath: imagePath.present ? imagePath.value : this.imagePath,
   );
   ChatMessage copyWithCompanion(ChatMessagesCompanion data) {
     return ChatMessage(
@@ -495,6 +530,7 @@ class ChatMessage extends DataClass implements Insertable<ChatMessage> {
       role: data.role.present ? data.role.value : this.role,
       message: data.message.present ? data.message.value : this.message,
       timestamp: data.timestamp.present ? data.timestamp.value : this.timestamp,
+      imagePath: data.imagePath.present ? data.imagePath.value : this.imagePath,
     );
   }
 
@@ -505,13 +541,15 @@ class ChatMessage extends DataClass implements Insertable<ChatMessage> {
           ..write('sessionId: $sessionId, ')
           ..write('role: $role, ')
           ..write('message: $message, ')
-          ..write('timestamp: $timestamp')
+          ..write('timestamp: $timestamp, ')
+          ..write('imagePath: $imagePath')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, sessionId, role, message, timestamp);
+  int get hashCode =>
+      Object.hash(id, sessionId, role, message, timestamp, imagePath);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -520,7 +558,8 @@ class ChatMessage extends DataClass implements Insertable<ChatMessage> {
           other.sessionId == this.sessionId &&
           other.role == this.role &&
           other.message == this.message &&
-          other.timestamp == this.timestamp);
+          other.timestamp == this.timestamp &&
+          other.imagePath == this.imagePath);
 }
 
 class ChatMessagesCompanion extends UpdateCompanion<ChatMessage> {
@@ -529,12 +568,14 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessage> {
   final Value<String> role;
   final Value<String> message;
   final Value<DateTime> timestamp;
+  final Value<String?> imagePath;
   const ChatMessagesCompanion({
     this.id = const Value.absent(),
     this.sessionId = const Value.absent(),
     this.role = const Value.absent(),
     this.message = const Value.absent(),
     this.timestamp = const Value.absent(),
+    this.imagePath = const Value.absent(),
   });
   ChatMessagesCompanion.insert({
     this.id = const Value.absent(),
@@ -542,6 +583,7 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessage> {
     required String role,
     required String message,
     required DateTime timestamp,
+    this.imagePath = const Value.absent(),
   }) : sessionId = Value(sessionId),
        role = Value(role),
        message = Value(message),
@@ -552,6 +594,7 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessage> {
     Expression<String>? role,
     Expression<String>? message,
     Expression<DateTime>? timestamp,
+    Expression<String>? imagePath,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -559,6 +602,7 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessage> {
       if (role != null) 'role': role,
       if (message != null) 'message': message,
       if (timestamp != null) 'timestamp': timestamp,
+      if (imagePath != null) 'image_path': imagePath,
     });
   }
 
@@ -568,6 +612,7 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessage> {
     Value<String>? role,
     Value<String>? message,
     Value<DateTime>? timestamp,
+    Value<String?>? imagePath,
   }) {
     return ChatMessagesCompanion(
       id: id ?? this.id,
@@ -575,6 +620,7 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessage> {
       role: role ?? this.role,
       message: message ?? this.message,
       timestamp: timestamp ?? this.timestamp,
+      imagePath: imagePath ?? this.imagePath,
     );
   }
 
@@ -596,6 +642,9 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessage> {
     if (timestamp.present) {
       map['timestamp'] = Variable<DateTime>(timestamp.value);
     }
+    if (imagePath.present) {
+      map['image_path'] = Variable<String>(imagePath.value);
+    }
     return map;
   }
 
@@ -606,7 +655,8 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessage> {
           ..write('sessionId: $sessionId, ')
           ..write('role: $role, ')
           ..write('message: $message, ')
-          ..write('timestamp: $timestamp')
+          ..write('timestamp: $timestamp, ')
+          ..write('imagePath: $imagePath')
           ..write(')'))
         .toString();
   }
@@ -1159,6 +1209,7 @@ typedef $$ChatMessagesTableCreateCompanionBuilder =
       required String role,
       required String message,
       required DateTime timestamp,
+      Value<String?> imagePath,
     });
 typedef $$ChatMessagesTableUpdateCompanionBuilder =
     ChatMessagesCompanion Function({
@@ -1167,6 +1218,7 @@ typedef $$ChatMessagesTableUpdateCompanionBuilder =
       Value<String> role,
       Value<String> message,
       Value<DateTime> timestamp,
+      Value<String?> imagePath,
     });
 
 class $$ChatMessagesTableFilterComposer
@@ -1200,6 +1252,11 @@ class $$ChatMessagesTableFilterComposer
 
   ColumnFilters<DateTime> get timestamp => $composableBuilder(
     column: $table.timestamp,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get imagePath => $composableBuilder(
+    column: $table.imagePath,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -1237,6 +1294,11 @@ class $$ChatMessagesTableOrderingComposer
     column: $table.timestamp,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get imagePath => $composableBuilder(
+    column: $table.imagePath,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$ChatMessagesTableAnnotationComposer
@@ -1262,6 +1324,9 @@ class $$ChatMessagesTableAnnotationComposer
 
   GeneratedColumn<DateTime> get timestamp =>
       $composableBuilder(column: $table.timestamp, builder: (column) => column);
+
+  GeneratedColumn<String> get imagePath =>
+      $composableBuilder(column: $table.imagePath, builder: (column) => column);
 }
 
 class $$ChatMessagesTableTableManager
@@ -1301,12 +1366,14 @@ class $$ChatMessagesTableTableManager
                 Value<String> role = const Value.absent(),
                 Value<String> message = const Value.absent(),
                 Value<DateTime> timestamp = const Value.absent(),
+                Value<String?> imagePath = const Value.absent(),
               }) => ChatMessagesCompanion(
                 id: id,
                 sessionId: sessionId,
                 role: role,
                 message: message,
                 timestamp: timestamp,
+                imagePath: imagePath,
               ),
           createCompanionCallback:
               ({
@@ -1315,12 +1382,14 @@ class $$ChatMessagesTableTableManager
                 required String role,
                 required String message,
                 required DateTime timestamp,
+                Value<String?> imagePath = const Value.absent(),
               }) => ChatMessagesCompanion.insert(
                 id: id,
                 sessionId: sessionId,
                 role: role,
                 message: message,
                 timestamp: timestamp,
+                imagePath: imagePath,
               ),
           withReferenceMapper:
               (p0) =>

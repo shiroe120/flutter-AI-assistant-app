@@ -18,7 +18,9 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  bool _isInitializing = true;
+  bool _isInitializing = false; // 是否正在初始化会话
+  // 暂存的选取的图片的路径
+  String imagePath = '';
   final TextEditingController _textController = TextEditingController();
 
   final ScrollController _scrollController = ScrollController();
@@ -81,6 +83,12 @@ class _ChatPageState extends State<ChatPage> {
             //消息发送框
             ChatInputBar(
               controller: _textController,
+              // 传入图片选取函数
+              onPicked: (String path) {
+                setState(() {
+                  imagePath = path;
+                });
+              },
               send: () async {
                 final userMessage = _textController.text.trim();
                 if (userMessage.isEmpty) return;
@@ -92,8 +100,10 @@ class _ChatPageState extends State<ChatPage> {
                 MessageSender _messageSender = MessageSender(
                   msgManager: messagesManager,
                 );
+                //获取可能存在的图片路径
+
                 // 发送消息
-                await _messageSender.sendWithMemory(history, userMessage);
+                await _messageSender.sendWithMemory(history, userMessage, imagePath);
                 // 滚动到最新消息
 
               },

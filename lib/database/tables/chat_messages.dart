@@ -6,6 +6,9 @@ class ChatMessages extends Table {
   TextColumn get role => text()();//user or ai
   TextColumn get message => text()();
   DateTimeColumn get timestamp => dateTime()();
+  //图片文件路径
+  TextColumn get imagePath => text().nullable()();
+
 
   @override
   Set<Column> get primaryKey => {id};

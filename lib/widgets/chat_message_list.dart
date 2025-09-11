@@ -48,6 +48,7 @@ class _ChatMessageListState extends State<ChatMessageList> {
     final messages = handler.messages;
 
 
+
     return ListView.builder(
       controller: _scrollController,
       itemCount: messages.length,
@@ -61,7 +62,7 @@ class _ChatMessageListState extends State<ChatMessageList> {
           child: Align(
             alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
             child: isUser
-                ? UserBubble(message: msg.message)
+                ? UserBubble(message: msg.message, imagePath: msg.imagePath)
                 : AiMessage(message: msg.message),
           ),
         );

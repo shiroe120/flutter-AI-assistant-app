@@ -35,12 +35,12 @@ class MessageSender {
   }
 
   // 处理一条带历史对话的用户消息：插入、调用 AI、插入 AI 回复
-  Future<void> sendWithMemory(List<ChatMessage> history,String userMessage) async {
+  Future<void> sendWithMemory(List<ChatMessage> history,String userMessage, String imagePath) async {
     if (userMessage.trim().isEmpty) return;
 
     // 插入用户消息
-    await msgManager.insertMessage(userMessage, 'user');
-
+    await msgManager.insertMessage(userMessage, 'user', imagePath: imagePath);
+    //发送消息给AI
     try {
       // 插入一条空的 AI 消息，并获得 ID
       final messageId = await msgManager.insertMessage('', 'ai');
@@ -48,7 +48,7 @@ class MessageSender {
 
       String reply = '';
       // ⭐ 用带记忆的流式方法
-      await for (final chunk in aiService.sendMessageStreamWithMemory(history, userMessage)) {
+      await for (final chunk in aiService.sendMessageStreamWithMemory(history, userMessage, imagePath)) {
         reply += chunk;
         await msgManager.updateMessageContent(messageId, reply);
       }

@@ -27,6 +27,10 @@ class ChatMessagesDao extends DatabaseAccessor<AppDatabase> with _$ChatMessagesD
         .write(ChatMessagesCompanion(message: Value(newContent)));
   }
 
+  // 删除指定 id 的消息
+  Future<int> deleteMessage(int messageId) {
+    return (delete(chatMessages)..where((msg) => msg.id.equals(messageId))).go();
+  }
 }
 
 
