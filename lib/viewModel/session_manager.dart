@@ -19,6 +19,23 @@ class SessionManager extends ChangeNotifier{
   SessionManager({required this.repository});
 
 
+  //修改会话名称
+  Future<void> renameSession(int sessionId, String newName) async {
+    final success = await repository.updateSessionName(sessionId, newName);
+      // 更新本地列表
+      final index = _sessions.indexWhere((s) => s.id == sessionId);
+      if (index != -1) {
+        final old = _sessions[index];
+        _sessions[index] = ChatSession(
+          id: old.id,
+          userId: old.userId,
+          sessionName: newName,
+          createdAt: old.createdAt,
+          updatedAt: DateTime.now(),
+        );
+        notifyListeners();
+      }
+  }
 
   // 获取当前用户ID
   Future<int> _getCurrentUserId() async {

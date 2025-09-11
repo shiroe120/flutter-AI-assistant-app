@@ -112,11 +112,12 @@ class _HomePageState extends State<HomePage> {
 
                 // 会话列表
                 Container(
+                  constraints: const BoxConstraints(minHeight: 100),
                   margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.onPrimary,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(8),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.05),
@@ -125,50 +126,92 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ],
                   ),
-                  child: Column(children: sessionManager.sessions.isEmpty
-                      ? [
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Text(
-                        "暂无会话",
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Theme.of(context).colorScheme.primary,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min, // 或 MainAxisSize.max 视情况
+                    children: sessionManager.sessions.isEmpty
+                        ? [
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Text(
+                          "暂无会话",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
                       ),
-                    ),
-                  ]
-                      : sessionManager.sessions
-                      .expand<Widget>((session) => [
-                    ListTile(
-                      title: Text(session.sessionName),
-                      subtitle: Text(session.createdAt.toString()),
-                      onTap: () async {
-                        final messagesManager = Provider.of<MessagesManager>(context, listen: false);
-                        await messagesManager.setSessionId(session.id);
-                        Navigator.pop(context);
-                      },
-                      trailing: IconButton(
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                        icon: const Icon(Icons.delete),
-                        onPressed: () async {
-                          await sessionManager.deleteSession(session.id);
-                          await _loadSessions();
+                    ]
+                        : sessionManager.sessions
+                        .expand<Widget>((session) => [
+                      ListTile(
+                        title: Text(session.sessionName),
+                        subtitle: Text(session.createdAt.toString()),
+                        onTap: () async {
+                          final messagesManager = Provider.of<MessagesManager>(context, listen: false);
+                          await messagesManager.setSessionId(session.id);
+                          Navigator.pop(context);
                         },
+                        onLongPress: () async {
+                          // 弹出对话框输入新名称
+                          final newName = await showDialog<String>(
+                            context: context,
+                            builder: (context) {
+                              final controller = TextEditingController(text: session.sessionName);
+                              return AlertDialog(
+                                title: const Text('修改会话名称'),
+                                content: TextField(
+                                  controller: controller,
+                                  decoration: const InputDecoration(
+                                    hintText: '请输入新名称',
+                                  ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context), // 取消
+                                    child: const Text('取消'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      final text = controller.text.trim();
+                                      if (text.isNotEmpty) {
+                                        Navigator.pop(context, text); // 返回新名称
+                                      }
+                                    },
+                                    child: const Text('确定'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+
+                          // 如果用户输入了新名称，则调用 renameSession
+                          if (newName != null && newName.isNotEmpty) {
+                            await sessionManager.renameSession(session.id, newName);
+                          }
+                        },
+                        trailing: IconButton(
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          icon: const Icon(Icons.delete),
+                          onPressed: () async {
+                            await sessionManager.deleteSession(session.id);
+                            await _loadSessions();
+                          },
+                        ),
                       ),
-                    ),
-                    Divider(
-                      color: Theme.of(context).colorScheme.surface,
-                      height: 1,
-                      indent: 16,
-                      endIndent: 16,
-                    ),
-                  ])
-                      .toList()
-                    ..removeLast(),
+
+                      Divider(
+                        color: Theme.of(context).colorScheme.surface,
+                        height: 1,
+                        indent: 16,
+                        endIndent: 16,
+                      ),
+                    ])
+                        .toList()
+                      ..removeLast(),
                   ),
+
                 ),
               ],
             );

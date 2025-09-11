@@ -264,51 +264,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 SizedBox(
-                  width: 16,
-                ),
-                //图库按钮
-                GestureDetector(
-                  onTap: () async {
-                    final picker = ImagePicker();
-                    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-                    if (pickedFile != null) {
-                      setState(() {
-                        _imagePath = pickedFile.path;
-                      });
-                      if (widget.onPicked != null) {
-                        widget.onPicked!(pickedFile.path);
-                      }
-                    }
-                  },
-                  child: SizedBox(
-                    width: 100,
-                    child: Card(
-                      elevation: 1,
-                      color: Theme.of(context).colorScheme.surface,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        side: BorderSide(
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
-                          width: 1,
-                        ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.photo, size: 32, color: Theme.of(context).colorScheme.primary),
-                            const SizedBox(height: 8),
-                            const Text('图库'),
-                          ],
-                        ),
-                      ),
-
-                    ),
-                  )
-                ),
-                SizedBox(
-                  width: 16,
+                  width: 32,
                 ),
                 //拍照按钮
                 GestureDetector(
@@ -325,32 +281,76 @@ class _ChatInputBarState extends State<ChatInputBar> {
                     }
                   },
                   child: SizedBox(
-                    width: 100,
-                    child: Card(
-                      elevation: 1,
-                      color: Theme.of(context).colorScheme.surface,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        side: BorderSide(
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
-                          width: 1,
-                        ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.camera_enhance_rounded, size: 32, color: Theme.of(context).colorScheme.primary),
-                            const SizedBox(height: 8),
-                            const Text('拍照'),
-                          ],
-                        ),
-                      ),
-
-                    ),
+                      width: 80,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Card(
+                            elevation: 0,
+                            color:  Theme.of(context).colorScheme.primary.withOpacity(0.05),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              side: BorderSide(
+                                color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                                width: 0,
+                              ),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.surface,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(Icons.camera_enhance_rounded, size: 32, color: Theme.of(context).colorScheme.primary),
+                              ),
+                            ),
+                          ),
+                          const Text('拍照', style: TextStyle(fontSize: 14)),
+                        ],
+                      )
                   ),
                 ),
+                //图库按钮
+                GestureDetector(
+                  onTap: () async {
+                    final picker = ImagePicker();
+                    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+                    if (pickedFile != null) {
+                      setState(() {
+                        _imagePath = pickedFile.path;
+                      });
+                      if (widget.onPicked != null) {
+                        widget.onPicked!(pickedFile.path);
+                      }
+                    }
+                  },
+                  child: SizedBox(
+                      width: 80,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Card(
+                            elevation: 0,
+                            color: Theme.of(context).colorScheme.primary.withOpacity(0.05),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              side: BorderSide(
+                                color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                                width: 0,
+                              ),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Icon(Icons.photo_rounded, size: 32, color: Theme.of(context).colorScheme.primary),
+                            ),
+                          ),
+                          const Text('图库', style: TextStyle(fontSize: 14)),
+                        ],
+                      )
+                  ),
+                ),
+
               ],
             ),
           )
