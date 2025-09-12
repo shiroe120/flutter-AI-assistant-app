@@ -65,7 +65,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
       alignment: Alignment.topCenter, // 从上往下展开/收起
       child:Container(
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-        margin: const EdgeInsets.only(left: 4, right: 4, bottom: 20, top: 8),
+        margin: const EdgeInsets.only(left: 8, right: 8, bottom: 20, top: 8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
@@ -311,6 +311,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
                       )
                   ),
                 ),
+                SizedBox(width: 8),
                 //图库按钮
                 GestureDetector(
                   onTap: () async {

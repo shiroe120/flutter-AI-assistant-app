@@ -27,7 +27,7 @@ class RegisterPage extends StatelessWidget {
         automaticallyImplyLeading: false,
         titleSpacing: 36,
         title: Text(
-          "REGISTER",
+          "注册",
 
           style: TextStyle(
             fontSize: UIConstants.titleFontSize,
@@ -60,7 +60,7 @@ class RegisterPage extends StatelessWidget {
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: Theme.of(context).colorScheme.onPrimary,
-                      labelText: "Email",
+                      labelText: "电子邮件",
                       labelStyle: TextStyle(color: underSurface),
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(
@@ -95,7 +95,7 @@ class RegisterPage extends StatelessWidget {
                       filled: true,
                       fillColor: Theme.of(context).colorScheme.onPrimary,
                       labelStyle: TextStyle(color: underSurface),
-                      labelText: "Password",
+                      labelText: "密码",
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(
                           color: underSurface, // midsurface
@@ -121,7 +121,7 @@ class RegisterPage extends StatelessWidget {
                       filled: true,
                       fillColor: Theme.of(context).colorScheme.onPrimary,
                       labelStyle: TextStyle(color: underSurface),
-                      labelText: "Confirm Password",
+                      labelText: "重复密码",
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(
                           color: underSurface, // midsurface
@@ -139,16 +139,6 @@ class RegisterPage extends StatelessWidget {
                   ),
                   SizedBox(height: 20),
 
-                  // Hint message
-                  Center(
-                    child: Text(
-                      "Please fill in your details to create an account.",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-                  ),
                   SizedBox(height: 60),
 
                   //buttons for register
@@ -171,7 +161,7 @@ class RegisterPage extends StatelessWidget {
                       String confirmPassword = confirmPasswordController.text;
 
                       if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
-                        CustomToast.show(context, "Please fill in all fields");
+                        CustomToast.show(context, "请填写所有字段");
                         return;
                       }
                       final result = await authManager.register(email, password, confirmPassword);
@@ -179,12 +169,12 @@ class RegisterPage extends StatelessWidget {
                         CustomToast.show(context, result);
                         return;
                       } else {
-                        CustomToast.show(context, "Registration successful");
+                        CustomToast.show(context, "成功注册");
                         Navigator.pop(context); // Go back to login page
                       }
                     },
                     child: Text(
-                      "Register",
+                      "注册",
                       style: TextStyle(
                           fontSize: 16),),
                   ),
@@ -217,7 +207,7 @@ class RegisterPage extends StatelessWidget {
                         Navigator.pop(context);
                       },
                       child: Text(
-                        "Back to Login",
+                        "返回登录",
                         style: TextStyle(
                             fontSize: 16),),
                     ),

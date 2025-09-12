@@ -4,6 +4,8 @@ class UIConstants {
   /// 圆角统一为 8
   static const BorderRadius borderRadius8 = BorderRadius.all(Radius.circular(8));
 
+  /// list和alertDIalog的圆角统一为 12
+  static const BorderRadius borderRadius12 = BorderRadius.all(Radius.circular(12));
   /// 常用 padding
   static const EdgeInsets pagePadding = EdgeInsets.only(left: 40, right: 40);
 

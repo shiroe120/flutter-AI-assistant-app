@@ -43,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.surface,
         title: Text(
-              "LOGIN",
+              "登录",
               style: TextStyle(
                 fontSize: UIConstants.titleFontSize,
                 fontWeight: FontWeight.bold,
@@ -111,7 +111,7 @@ class _LoginPageState extends State<LoginPage> {
                     filled: true,
                     fillColor: Theme.of(context).colorScheme.onPrimary,
                     labelStyle: TextStyle(color: underSurface),
-                    labelText: "Password",
+                    labelText: "密码",
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
                         color: underSurface, // midsurface
@@ -129,16 +129,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 SizedBox(height: 20),
 
-                // Welcome message
-                Center(
-                  child: Text(
-                    "Welcome to the AI Assistant App!  ",
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                  ),
-                ),
                 SizedBox(height: 60),
 
                 //buttons for login
@@ -162,7 +152,7 @@ class _LoginPageState extends State<LoginPage> {
                     String password = passwordController.text.trim();
 
                     if (email.isEmpty || password.isEmpty) {
-                      CustomToast.show( context, "Please fill in all fields");
+                      CustomToast.show( context, "请填写所有字段");
                       return;
                     }
 
@@ -177,12 +167,12 @@ class _LoginPageState extends State<LoginPage> {
                       final userId = await userRepository.getUserIdByEmail(email);
                       await prefs.setInt('currentUserId', userId!);
                       print("当前存入到的 userId 是: $userId");
-                      CustomToast.show(context, "Login successful");
+                      CustomToast.show(context, "登陆成功");
                       Navigator.pushNamed(context, '/home');
                     }
                   },
                   child: Text(
-                    "Login",
+                    "登录",
                     style: TextStyle(
                         fontSize: 16),),
                 ),
@@ -213,7 +203,7 @@ class _LoginPageState extends State<LoginPage> {
                     onPressed: (){
                       Navigator.pushNamed(context, '/register');
                     },
-                    child: Text("Register",
+                    child: Text("注册",
                       style: TextStyle(
                           fontSize: 16,
                           color: Theme.of(context).colorScheme.primary

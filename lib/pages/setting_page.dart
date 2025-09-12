@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../themes/light_theme.dart';
+import '../widgets/input_dialog.dart';
 
 class SettingPage extends StatelessWidget {
   const SettingPage({super.key});
@@ -13,46 +14,46 @@ class SettingPage extends StatelessWidget {
     final TextEditingController controller = TextEditingController(text: existingPrompt);
 
     showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('设置提示词'),
-            content: TextField(
-              controller: controller,
-              maxLines: 5,
-              decoration: InputDecoration(
-                hintText: '输入提示词...',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('取消'),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  final prompt = controller.text.trim();
-                  if (prompt.isNotEmpty) {
-                    await prefs.setString('globalPrompt', prompt);
-                    Navigator.of(context).pop();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('提示词已设置')),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('提示词不能为空')),
-                    );
-                  }
-                },
-                child: const Text('保存'),
-              ),
-            ],
-          );
-        }
-        );
+      context: context,
+      builder: (context) => InputDialog(
+          title:"设置提示词",
+          hintText: '输入提示词',
+          sharedPreferencesKey: 'globalPrompt',
+          controller: controller,
+          prefs: prefs),
+    );
+  }
+  // 展示apikey的输入框表单
+  Future<void> _showApiKeyInputDialog(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final existingApiKey = prefs.getString('apiKey') ?? '';
+
+    final TextEditingController controller = TextEditingController(text: existingApiKey);
+
+    showDialog(
+      context: context,
+      builder: (context) => InputDialog(
+        title: "设置 API Key",
+        hintText: '输入 API Key',
+          sharedPreferencesKey: 'apiKey',
+          controller: controller, prefs: prefs),
+    );
+  }
+  // 展示modelId的输入框表单
+  Future<void> _showModelIdInputDialog(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final existingModelId = prefs.getString('modelId') ?? '';
+
+    final TextEditingController controller = TextEditingController(text: existingModelId);
+
+    showDialog(
+      context: context,
+      builder: (context) => InputDialog(
+          title: "设置 Model ID",
+          hintText: '输入 Model ID',
+          sharedPreferencesKey: 'modelId',
+          controller: controller, prefs: prefs),
+    );
   }
 
 
@@ -78,24 +79,20 @@ class SettingPage extends StatelessWidget {
         ),
       ),
       body: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-        padding: const EdgeInsets.symmetric(vertical: 8),
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal:8,vertical: 16),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.onPrimary,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+            width: 1,
+          ),
         ),
         child: Column(
           children: [
             // 设置
             ListTile(
-              leading: Icon(Icons.edit, color: Theme.of(context).colorScheme.primary),
               title: const Text('设置提示词'),
               subtitle: const Text("点击后输入提示词，可在对话中自动使用"),
               onTap: () => _showPromptInputDialog(context),
@@ -105,6 +102,22 @@ class SettingPage extends StatelessWidget {
               height: 1,
               indent: 16,
               endIndent: 16,
+            ),
+            ListTile(
+              title: const Text('设置ModelId'),
+              subtitle: const Text("默认只支持火山引擎的模型"),
+              onTap: () => _showModelIdInputDialog(context),
+            ),
+            Divider(
+              color: Theme.of(context).colorScheme.surface,
+              height: 1,
+              indent: 16,
+              endIndent: 16,
+            ),
+            ListTile(
+              title: const Text('设置apiKey'),
+              subtitle: const Text("点击后输入apiKey"),
+              onTap: () => _showApiKeyInputDialog(context),
             ),
           ],
         ),
