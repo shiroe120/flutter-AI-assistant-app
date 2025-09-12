@@ -1,3 +1,4 @@
+import 'package:ai_assitant/widgets/typing_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../viewModel/msg_manager.dart';
@@ -62,8 +63,14 @@ class _ChatMessageListState extends State<ChatMessageList> {
           child: Align(
             alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
             child: isUser
-                ? UserBubble(message: msg.message, imagePath: msg.imagePath)
-                : AiMessage(message: msg.message),
+                ? UserBubble(
+              message: msg.message,
+              imagePath: msg.imagePath,
+            )
+                : (msg.message.isEmpty
+                ? const TypingIndicator()
+                : AiMessage(message: msg.message)),
+
           ),
         );
       },

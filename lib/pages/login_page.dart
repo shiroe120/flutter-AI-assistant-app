@@ -92,14 +92,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    errorText: (emailController.text.isNotEmpty &&
-                        !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(emailController.text))
-                        ? "请输入有效的邮箱地址"
-                        : null,
                   ),
-                  onChanged: (_) {
-                    (context as Element).markNeedsBuild();
-                  },
                 ),
                 SizedBox(height: 8),
 

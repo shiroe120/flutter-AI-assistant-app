@@ -18,7 +18,6 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  bool _isInitializing = false; // 是否正在初始化会话
   // 暂存的选取的图片的路径
   String imagePath = '';
   final TextEditingController _textController = TextEditingController();
@@ -28,32 +27,6 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
-    _initializeSession();
-
-  }
-
-  // 初始化会话
-  Future<void> _initializeSession() async {
-    try {
-      final sessionManager = Provider.of<SessionManager>(context, listen: false);
-      final messagesManager = Provider.of<MessagesManager>(context, listen: false);
-
-      // 创建新会话
-      final newSessionId = await sessionManager.createNewSession();
-
-      // 设置会话ID
-      await messagesManager.setSessionId(newSessionId);
-
-
-
-    } catch (e) {
-      // 处理错误，例如显示错误提示
-      print("初始化会话失败，哈哈，不报错了: $e");
-    } finally {
-      setState(() {
-        _isInitializing = false;
-      });
-    }
   }
 
   @override
@@ -97,14 +70,14 @@ class _ChatPageState extends State<ChatPage> {
 
                 //获取历史消息列表
                 final history = messagesManager.messages;
+                //创建消息发送器
                 MessageSender _messageSender = MessageSender(
+                  sessionManager: Provider.of<SessionManager>(context, listen: false),
                   msgManager: messagesManager,
                 );
-                //获取可能存在的图片路径
-
                 // 发送消息
-                await _messageSender.sendWithMemory(history, userMessage, imagePath);
-                // 滚动到最新消息
+                await _messageSender.sendWithMemory(history, userMessage, imagePath, messagesManager,
+                    Provider.of<SessionManager>(context, listen: false));
 
               },
             ),

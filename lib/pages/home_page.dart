@@ -21,10 +21,41 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController _controller = TextEditingController();
 
 
+
   @override
   void initState() {
     super.initState();
-    _loadSessions();
+
+    // 延迟执行，保证 context 可用
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final sessionManager = Provider.of<SessionManager>(context, listen: false);
+      final msgManager = Provider.of<MessagesManager>(context, listen: false);
+
+      // 先加载已有会话
+      await sessionManager.loadSessions();
+
+      int? targetSessionId;
+
+      // 找到第一个没有消息的会话
+      for (var session in sessionManager.sessions) {
+        final messages = await msgManager.repository.getMessagesBySession(session.id);
+        if (messages.isEmpty) {
+          targetSessionId = session.id;
+          break;
+        }
+      }
+
+      if (targetSessionId == null) {
+        // 如果没有空会话，则创建新会话
+        targetSessionId = await sessionManager.createNewSession();
+      }
+
+      // 设置 msgManager 的 sessionId
+      await msgManager.setSessionId(targetSessionId);
+
+      // 手动触发 rebuild，确保 Drawer 更新
+      setState(() {});
+    });
   }
 
   Future<void> _loadSessions() async {
@@ -55,11 +86,30 @@ class _HomePageState extends State<HomePage> {
               final sessionManager = Provider.of<SessionManager>(context, listen: false);
               final messagesManager = Provider.of<MessagesManager>(context, listen: false);
 
-              // 创建新会话
-              final newSessionId = await sessionManager.createNewSession();
-              await messagesManager.setSessionId(newSessionId);
+              // 加载已有会话
+              await sessionManager.loadSessions();
+
+              int? targetSessionId;
+
+              // 找到第一个没有消息的会话
+              for (var session in sessionManager.sessions) {
+                final messages = await messagesManager.repository.getMessagesBySession(session.id);
+                if (messages.isEmpty) {
+                  targetSessionId = session.id;
+                  break;
+                }
+              }
+
+              if (targetSessionId == null) {
+                // 如果没有空会话，则创建新会话
+                targetSessionId = await sessionManager.createNewSession();
+              }
+
+              // 设置 msgManager 的 sessionId
+              await messagesManager.setSessionId(targetSessionId);
             },
           ),
+
         ],
 
         backgroundColor: Theme.of(context).colorScheme.onPrimary,
@@ -68,8 +118,8 @@ class _HomePageState extends State<HomePage> {
 
       //侧边栏
       drawer: Drawer(
-        child: Consumer<SessionManager>(
-          builder: (context, sessionManager, _) {
+        child: Consumer2<SessionManager, MessagesManager>(
+          builder: (context, sessionManager, msgManager,_) {
             return ListView(
               children: [
                 // hint text
@@ -141,63 +191,134 @@ class _HomePageState extends State<HomePage> {
                     ]
                         : sessionManager.sessions
                         .expand<Widget>((session) => [
-                      ListTile(
-                        title: Text(session.sessionName),
-                        subtitle: Text(session.createdAt.toString()),
-                        onTap: () async {
-                          final messagesManager = Provider.of<MessagesManager>(context, listen: false);
-                          await messagesManager.setSessionId(session.id);
-                          Navigator.pop(context);
-                        },
-                        onLongPress: () async {
-                          // 弹出对话框输入新名称
-                          final newName = await showDialog<String>(
-                            context: context,
-                            builder: (context) {
-                              final controller = TextEditingController(text: session.sessionName);
-                              return AlertDialog(
-                                title: const Text('修改会话名称'),
-                                content: TextField(
-                                  controller: controller,
-                                  decoration: const InputDecoration(
-                                    hintText: '请输入新名称',
-                                  ),
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context), // 取消
-                                    child: const Text('取消'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      final text = controller.text.trim();
-                                      if (text.isNotEmpty) {
-                                        Navigator.pop(context, text); // 返回新名称
-                                      }
-                                    },
-                                    child: const Text('确定'),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-
-                          // 如果用户输入了新名称，则调用 renameSession
-                          if (newName != null && newName.isNotEmpty) {
-                            await sessionManager.renameSession(session.id, newName);
-                          }
-                        },
-                        trailing: IconButton(
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                          icon: const Icon(Icons.delete),
-                          onPressed: () async {
-                            await sessionManager.deleteSession(session.id);
-                            await _loadSessions();
+                          // 用container包裹了listTile
+                      Container(
+                        decoration: BoxDecoration(
+                          color: msgManager.sessionId == session.id
+                              ? Theme.of(context).colorScheme.surface // 当前会话
+                              : Theme.of(context).colorScheme.onPrimary, // 其他会话
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        child: ListTile(
+                          title: Text(session.sessionName),
+                          subtitle: Text(session.createdAt.toString().substring(0, 16)),
+                          onTap: () async {
+                            final messagesManager =
+                            Provider.of<MessagesManager>(context, listen: false);
+                            await messagesManager.setSessionId(session.id);
+                            Navigator.pop(context);
                           },
+                          onLongPress: () async {
+                            // 弹出修改名称逻辑保持原样
+                            final newName = await showDialog<String>(
+                              context: context,
+                              builder: (context) {
+                                final controller =
+                                TextEditingController(text: session.sessionName);
+                                return AlertDialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  title: const Text('修改会话名称'),
+                                  backgroundColor:
+                                  Theme.of(context).colorScheme.onPrimary,
+                                  content: TextField(
+                                    controller: controller,
+                                    maxLines: 1,
+                                    decoration: InputDecoration(
+                                      hintText: '请输入新名称',
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        borderSide: BorderSide(
+                                          color: Theme.of(context).colorScheme.surface,
+                                          width: 1,
+                                        ),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        borderSide: BorderSide(
+                                          color: Theme.of(context).colorScheme.primary,
+                                          width: 1,
+                                        ),
+                                      ),
+                                      filled: true,
+                                      fillColor: Theme.of(context).colorScheme.surface,
+                                    ),
+                                  ),
+                                  actions: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Expanded(
+                                          child: TextButton(
+                                            style: TextButton.styleFrom(
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(12),
+                                              ),
+                                              side: BorderSide(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary,
+                                                width: 1,
+                                              ),
+                                            ),
+                                            onPressed: () =>
+                                                Navigator.of(context).pop(),
+                                            child: const Text('取消'),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 16),
+                                        Expanded(
+                                          child: ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(12),
+                                              ),
+                                            ),
+                                            onPressed: () {
+                                              final text =
+                                              controller.text.trim();
+                                              if (text.isNotEmpty) {
+                                                Navigator.of(context).pop(text);
+                                              } else {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(const SnackBar(
+                                                    content: Text(
+                                                        '输入内容不能为空')));
+                                              }
+                                            },
+                                            child: const Text(
+                                              '确定',
+                                              style: TextStyle(color: Colors.white),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+
+                            if (newName != null && newName.isNotEmpty) {
+                              await sessionManager.renameSession(session.id, newName);
+                            }
+                          },
+                          trailing: IconButton(
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            icon: const Icon(Icons.delete),
+                            onPressed: () async {
+                              await sessionManager.deleteSession(session.id);
+                              await _loadSessions();
+                            },
+                          ),
                         ),
                       ),
-
                       Divider(
                         color: Theme.of(context).colorScheme.surface,
                         height: 1,
@@ -207,6 +328,7 @@ class _HomePageState extends State<HomePage> {
                     ])
                         .toList()
                       ..removeLast(),
+
                   ),
 
                 ),

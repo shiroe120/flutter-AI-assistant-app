@@ -83,19 +83,53 @@ class InputDialog extends StatelessWidget {
                   ),
                 ),
                 onPressed: () async {
-                  final prompt = controller.text.trim();
-                  if (prompt.isNotEmpty) {
-                    await prefs.setString(sharedPreferencesKey, prompt);
+                  final input = controller.text.trim();
+                  if (input.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('输入内容不能为空'),
+                        duration: Duration(milliseconds: 200),
+                      ),
+                    );
+                    return;
+                  }
+
+                  try {
+                    if (sharedPreferencesKey == 'maxMemory') {
+                      // 转整数保存
+                      final value = int.tryParse(input);
+                      if (value == null || value <= 0) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('请输入有效的正整数'),
+                            duration: Duration(milliseconds: 200),
+                          ),
+                        );
+                        return;
+                      }
+                      await prefs.setInt(sharedPreferencesKey, value);
+                    } else {
+                      // 保存字符串
+                      await prefs.setString(sharedPreferencesKey, input);
+                    }
+
                     Navigator.of(context).pop();
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('提示词已设置')),
+                      const SnackBar(
+                        content: Text('已成功设置'),
+                        duration: Duration(milliseconds: 200),
+                      ),
                     );
-                  } else {
+                  } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('提示词不能为空')),
+                      SnackBar(
+                        content: Text('保存失败: $e'),
+                        duration: const Duration(milliseconds: 200),
+                      ),
                     );
                   }
                 },
+
                 child: const Text('保存', style: TextStyle(color: Colors.white),
               ),
             ),

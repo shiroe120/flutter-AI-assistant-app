@@ -56,6 +56,26 @@ class SettingPage extends StatelessWidget {
     );
   }
 
+  // 展示连续对话数上线的输入框表单
+  Future<void> _showMaxMemoryInputDialog(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final existingValue = prefs.getInt('maxMemory') ?? 5; // 默认 5 条
+
+    final TextEditingController controller = TextEditingController(text: existingValue.toString());
+
+    showDialog(
+      context: context,
+      builder: (context) => InputDialog(
+        title: "设置连续对话数上限",
+        hintText: '输入最大连续对话数',
+        sharedPreferencesKey: 'maxMemory',
+        controller: controller,
+        prefs: prefs,
+      ),
+    );
+  }
+
+
 
 
 
@@ -90,6 +110,7 @@ class SettingPage extends StatelessWidget {
           ),
         ),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             // 设置
             ListTile(
@@ -118,6 +139,17 @@ class SettingPage extends StatelessWidget {
               title: const Text('设置apiKey'),
               subtitle: const Text("点击后输入apiKey"),
               onTap: () => _showApiKeyInputDialog(context),
+            ),
+            Divider(
+              color: Theme.of(context).colorScheme.surface,
+              height: 1,
+              indent: 16,
+              endIndent: 16,
+            ),
+            ListTile(
+              title: const Text('设置连续对话数上限'),
+              subtitle: const Text("连续对话数过大可能导致延迟"),
+              onTap: () => _showMaxMemoryInputDialog(context),
             ),
           ],
         ),
