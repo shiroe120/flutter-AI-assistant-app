@@ -44,4 +44,47 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# Ignore C++ source and header files in platform folders
+desktop_platforms = ["windows", "linux", "macos"]
+for platform in desktop_platforms:
+    print(f"**/{platform}/**/*.cpp\n**/{platform}/**/*.cc\n**/{platform}/**/*.cxx\n**/{platform}/**/*.c\n**/{platform}/**/*.h\n**/{platform}/**/*.hpp\n**/{platform}/**/*.hxx\n**/{platform}/**/*.hh\n**/{platform}/**/*.inl\n**/{platform}/**/*.ipp\n**/{platform}/**/*.tcc\n**/{platform}/**/*.tpp\n")
+
+# Add ignore rules for C++ files in platform folders
+**/windows/**/*.cpp
+**/windows/**/*.cc
+**/windows/**/*.cxx
+**/windows/**/*.c
+**/windows/**/*.h
+**/windows/**/*.hpp
+**/windows/**/*.hxx
+**/windows/**/*.hh
+**/windows/**/*.inl
+**/windows/**/*.ipp
+**/windows/**/*.tcc
+**/windows/**/*.tpp
+**/linux/**/*.cpp
+**/linux/**/*.cc
+**/linux/**/*.cxx
+**/linux/**/*.c
+**/linux/**/*.h
+**/linux/**/*.hpp
+**/linux/**/*.hxx
+**/linux/**/*.hh
+**/linux/**/*.inl
+**/linux/**/*.ipp
+**/linux/**/*.tcc
+**/linux/**/*.tpp
+**/macos/**/*.cpp
+**/macos/**/*.cc
+**/macos/**/*.cxx
+**/macos/**/*.c
+**/macos/**/*.h
+**/macos/**/*.hpp
+**/macos/**/*.hxx
+**/macos/**/*.hh
+**/macos/**/*.inl
+**/macos/**/*.ipp
+**/macos/**/*.tcc
+**/macos/**/*.tpp
+
 .env
