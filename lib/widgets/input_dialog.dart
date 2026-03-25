@@ -84,15 +84,6 @@ class InputDialog extends StatelessWidget {
                 ),
                 onPressed: () async {
                   final input = controller.text.trim();
-                  if (input.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('输入内容不能为空'),
-                        duration: Duration(milliseconds: 200),
-                      ),
-                    );
-                    return;
-                  }
 
                   try {
                     if (sharedPreferencesKey == 'maxMemory') {
@@ -117,14 +108,14 @@ class InputDialog extends StatelessWidget {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('已成功设置'),
-                        duration: Duration(milliseconds: 200),
+                        duration: Duration(milliseconds: 300),
                       ),
                     );
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text('保存失败: $e'),
-                        duration: const Duration(milliseconds: 200),
+                        duration: const Duration(milliseconds: 300),
                       ),
                     );
                   }

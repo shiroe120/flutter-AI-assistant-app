@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SpeechToTextHelper {
   final FlutterSoundRecorder _recorder = FlutterSoundRecorder();
@@ -72,9 +73,14 @@ class SpeechToTextHelper {
     final base64Audio = base64Encode(bytes);
 
     try {
+      // 获取百度语音识别的 SecretKey 和 AccessKey
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? ak = prefs.getString('baiduAccessKey');
+      String? sk = prefs.getString('baiduSecretKey');
+      if (ak == null || sk == null || ak.isEmpty || sk.isEmpty) {
+        return "请先在设置页面配置百度云的 Access Key 和 Secret Key";
+      }
       final dio = Dio();
-      final ak = "1P0VnR2zkpHj9pDGrR1zEBCb";
-      final sk = "yZPutcQprDH1JkID4ufgS5UldkQRgzim";
 
       // 获取 token
       final tokenResponse = await dio.post(

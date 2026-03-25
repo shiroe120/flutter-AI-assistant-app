@@ -75,6 +75,39 @@ class SettingPage extends StatelessWidget {
     );
   }
 
+  // 展示百度云SecretKey的输入框表单
+  Future<void> _showBaiduSecretKeyInputDialog(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final existingSecretKey = prefs.getString('baiduSecretKey') ?? '';
+
+    final TextEditingController controller = TextEditingController(text: existingSecretKey);
+
+    showDialog(
+      context: context,
+      builder: (context) => InputDialog(
+          title: "设置百度云 Secret Key",
+          hintText: '输入百度云 Secret Key',
+          sharedPreferencesKey: 'baiduSecretKey',
+          controller: controller, prefs: prefs),
+    );
+  }
+
+  // 展示百度云AccessKey的输入框表单
+  Future<void> _showBaiduAccessKeyInputDialog(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final existingAccessKey = prefs.getString('baiduAccessKey') ?? '';
+
+    final TextEditingController controller = TextEditingController(text: existingAccessKey);
+
+    showDialog(
+      context: context,
+      builder: (context) => InputDialog(
+          title: "设置百度云 Access Key",
+          hintText: '输入百度云 Access Key',
+          sharedPreferencesKey: 'baiduAccessKey',
+          controller: controller, prefs: prefs),
+    );
+  }
 
 
 
@@ -150,6 +183,28 @@ class SettingPage extends StatelessWidget {
               title: const Text('设置连续对话数上限'),
               subtitle: const Text("连续对话数过大可能导致延迟"),
               onTap: () => _showMaxMemoryInputDialog(context),
+            ),
+            Divider(
+              color: Theme.of(context).colorScheme.surface,
+              height: 1,
+              indent: 16,
+              endIndent: 16,
+            ),
+            ListTile(
+              title: const Text('设置百度云 Secret Key'),
+              subtitle: const Text("用于语音识别"),
+              onTap: () => _showBaiduSecretKeyInputDialog(context),
+            ),
+            Divider(
+              color: Theme.of(context).colorScheme.surface,
+              height: 1,
+              indent: 16,
+              endIndent: 16,
+            ),
+            ListTile(
+              title: const Text('设置百度云 Access Key'),
+              subtitle: const Text("用于语音识别"),
+              onTap: () => _showBaiduAccessKeyInputDialog(context),
             ),
           ],
         ),
