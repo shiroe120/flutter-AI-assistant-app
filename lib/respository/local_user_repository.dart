@@ -1,4 +1,4 @@
-import 'package:ai_assitant/respository/repository.dart';
+import 'package:ai_assitant/respository/user_repository.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'package:drift/drift.dart';
@@ -46,5 +46,11 @@ class LocalUserRepository implements UserRepository {
     await db.usersDao.insertUser(userCompanion);
 
     return null; // null 表示注册成功
+  }
+
+  @override
+  Future<int?> getUserIdByEmail(String email) async {
+    final user = await db.usersDao.getUserByEmail(email);
+    return user?.id;
   }
 }

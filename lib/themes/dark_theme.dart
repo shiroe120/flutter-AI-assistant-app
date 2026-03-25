@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 final darkColorScheme = ColorScheme.dark(
-  primary: Color(0xFF323232),
+  primary: Color(0xFFE3E3E3),
   secondary: Colors.amber,
   surface: Color(0xff2b2b2b),
-  onPrimary: Colors.white,
+  onPrimary: Color(0xFF292929),
   onSurface: Colors.white70,
 );
 

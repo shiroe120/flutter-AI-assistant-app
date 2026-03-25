@@ -2,13 +2,13 @@ import 'package:ai_assitant/themes/light_theme.dart';
 import 'package:ai_assitant/utils/custom_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_assitant/themes/ui_constants.dart';
-import 'package:ai_assitant/auth_manager.dart';
+import 'package:ai_assitant/viewModel/auth_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../database/app_database.dart';
 import '../respository/local_user_repository.dart';
-import '../respository/repository.dart';
+import '../respository/user_repository.dart';
 
 
 class LoginPage extends StatefulWidget{
@@ -43,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.surface,
         title: Text(
-              "LOGIN",
+              "登录",
               style: TextStyle(
                 fontSize: UIConstants.titleFontSize,
                 fontWeight: FontWeight.bold,
@@ -51,6 +51,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
         ),
         titleSpacing: 36,
+        automaticallyImplyLeading: false, // Disable the back button
 
       ),
       body: Center(
@@ -76,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: Theme.of(context).colorScheme.onPrimary,
-                    labelText: "Email",
+                    labelText: "电子邮箱",
                     labelStyle: TextStyle(color: underSurface),
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
@@ -91,15 +92,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    errorText: emailController.text.isNotEmpty &&
-                            !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                                .hasMatch(emailController.text)
-                        ? "请输入有效的邮箱地址"
-                        : null,
                   ),
-                  onChanged: (_) {
-                    (context as Element).markNeedsBuild();
-                  },
                 ),
                 SizedBox(height: 8),
 
@@ -111,7 +104,7 @@ class _LoginPageState extends State<LoginPage> {
                     filled: true,
                     fillColor: Theme.of(context).colorScheme.onPrimary,
                     labelStyle: TextStyle(color: underSurface),
-                    labelText: "Password",
+                    labelText: "密码",
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
                         color: underSurface, // midsurface
@@ -129,16 +122,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 SizedBox(height: 20),
 
-                // Welcome message
-                Center(
-                  child: Text(
-                    "Welcome to the AI Assistant App!  ",
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                  ),
-                ),
                 SizedBox(height: 60),
 
                 //buttons for login
@@ -162,7 +145,7 @@ class _LoginPageState extends State<LoginPage> {
                     String password = passwordController.text.trim();
 
                     if (email.isEmpty || password.isEmpty) {
-                      CustomToast.show( context, "Please fill in all fields");
+                      CustomToast.show( context, "请填写所有字段");
                       return;
                     }
 
@@ -173,36 +156,52 @@ class _LoginPageState extends State<LoginPage> {
                     }else{
                       final prefs = await SharedPreferences.getInstance();
                       await prefs.setBool('loggedIn', true);
-                      CustomToast.show(context, "Login successful");
+                      //查询用户ID
+                      final userId = await userRepository.getUserIdByEmail(email);
+                      await prefs.setInt('currentUserId', userId!);
+                      print("当前存入到的 userId 是: $userId");
+                      CustomToast.show(context, "登陆成功");
                       Navigator.pushNamed(context, '/home');
                     }
                   },
                   child: Text(
-                    "Login",
+                    "登录",
                     style: TextStyle(
                         fontSize: 16),),
                 ),
                 SizedBox(height: 8),
+
                 // Register button to navigate to the register page
-                OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    minimumSize: Size.fromHeight(UIConstants.buttonHeight),
-                    side: BorderSide(
-                      color: Theme.of(context).colorScheme.onPrimary
-                    ),
-                    backgroundColor: Theme.of(context).colorScheme.onPrimary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+                Container(
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.02),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
-                  onPressed: (){
-                    Navigator.pushNamed(context, '/register');
-                  },
-                  child: Text("Register",
-                    style: TextStyle(
-                        fontSize: 16,
-                        color: Theme.of(context).colorScheme.primary
-                      ),),
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: Size.fromHeight(UIConstants.buttonHeight),
+                      side: BorderSide(
+                        color: Theme.of(context).colorScheme.onPrimary
+                      ),
+                      backgroundColor: Theme.of(context).colorScheme.onPrimary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: (){
+                      Navigator.pushNamed(context, '/register');
+                    },
+                    child: Text("注册",
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Theme.of(context).colorScheme.primary
+                        ),),
+                  ),
                 ),
                 SizedBox(height: 80),
               ],
