@@ -45,11 +45,7 @@ app.*.map.json
 /android/app/release
 
 # Ignore C++ source and header files in platform folders
-desktop_platforms = ["windows", "linux", "macos"]
-for platform in desktop_platforms:
-    print(f"**/{platform}/**/*.cpp\n**/{platform}/**/*.cc\n**/{platform}/**/*.cxx\n**/{platform}/**/*.c\n**/{platform}/**/*.h\n**/{platform}/**/*.hpp\n**/{platform}/**/*.hxx\n**/{platform}/**/*.hh\n**/{platform}/**/*.inl\n**/{platform}/**/*.ipp\n**/{platform}/**/*.tcc\n**/{platform}/**/*.tpp\n")
-
-# Add ignore rules for C++ files in platform folders
+# 只需如下规则即可，无需脚本内容
 **/windows/**/*.cpp
 **/windows/**/*.cc
 **/windows/**/*.cxx
